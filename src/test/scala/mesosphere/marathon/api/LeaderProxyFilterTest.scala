@@ -9,6 +9,7 @@ import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import mesosphere.UnitTest
 import mesosphere.chaos.http.HttpConf
 import mesosphere.marathon.core.election.ElectionService
+import mesosphere.marathon.MarathonSchedulerService
 import akka.http.scaladsl.model.StatusCodes._
 import org.mockito.Mockito._
 import org.rogach.scallop.ScallopConf
@@ -25,12 +26,13 @@ class LeaderProxyFilterTest extends UnitTest {
 
   case class Fixture(
       conf: HttpConf = httpConf(),
+      marathonSchedulerService: MarathonSchedulerService = mock[MarathonSchedulerService]("marathonSchedulerService"),
       electionService: ElectionService = mock[ElectionService]("electionService"),
       forwarder: RequestForwarder = mock[RequestForwarder]("forwarder"),
       request: HttpServletRequest = mock[HttpServletRequest]("request"),
       response: HttpServletResponse = mock[HttpServletResponse]("response"),
       chain: FilterChain = mock[FilterChain]("chain")) {
-    val filter = new LeaderProxyFilter(conf, electionService, "host:10000", forwarder) {
+    val filter = new LeaderProxyFilter(conf, marathonSchedulerService, electionService, "host:10000", forwarder) {
       override def sleep() = {}
     }
 

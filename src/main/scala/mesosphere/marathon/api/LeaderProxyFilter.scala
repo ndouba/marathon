@@ -27,6 +27,7 @@ import scala.util.{ Failure, Success, Try }
   */
 class LeaderProxyFilter @Inject() (
     httpConf: HttpConf,
+    marathonSchedulerService: MarathonSchedulerService,
     electionService: ElectionService,
     @Named(ModuleNames.HOST_PORT) myHostPort: String,
     forwarder: RequestForwarder) extends Filter {
@@ -56,66 +57,56 @@ class LeaderProxyFilter @Inject() (
       }
     }
 
-  @tailrec
+  private sealed trait LeaderResult
+  private case object WeAreLeader extends LeaderResult
+  private case object NoLeaderOrNotReady extends LeaderResult
+  private case class LeaderKnown(address: String) extends LeaderResult
+
+  @tailrec private def waitForConsistentLeadership(retries: Int = 10): LeaderResult = {
+    var result = false
+    val weAreLeader = electionService.isLeader
+    val leaderReady = marathonSchedulerService.leaderReady
+    val currentLeaderData = electionService.leaderHostPort
+
+    if (weAreLeader && leaderReady) {
+      WeAreLeader
+    } else if ((!weAreLeader) && (currentLeaderData.nonEmpty)) {
+      LeaderKnown(currentLeaderData.get)
+    } else {
+      if (weAreLeader)
+        log.info("We're leader but not yet ready")
+      else
+        log.info("No known leader yet")
+
+      sleep()
+      if (retries > 0)
+        waitForConsistentLeadership(retries - 1)
+      else
+        NoLeaderOrNotReady
+    }
+  }
+
   final def doFilter(
     rawRequest: ServletRequest,
     rawResponse: ServletResponse,
     chain: FilterChain): Unit = {
 
-    def waitForConsistentLeadership(): Boolean = {
-      var retries = 10
-      var result = false
-      do {
-        val weAreLeader = electionService.isLeader
-        val currentLeaderData = electionService.leaderHostPort
-
-        if (weAreLeader || currentLeaderData.exists(_ != myHostPort)) {
-          log.info("Leadership info is consistent again!")
-          result = true
-          retries = 0
-        } else if (retries >= 0) {
-          // as long as we are not flagged as elected yet, the leadership transition is still
-          // taking place and we hold back any requests.
-          log.info(s"Waiting for consistent leadership state. Are we leader?: $weAreLeader, leader: $currentLeaderData")
-          sleep()
-        } else {
-          log.error(
-            s"inconsistent leadership state, refusing request for ourselves at $myHostPort. " +
-              s"Are we leader?: $weAreLeader, leader: $currentLeaderData")
-        }
-
-        retries -= 1
-      } while (retries >= 0)
-
-      result
-    }
-
     (rawRequest, rawResponse) match {
       case (request: HttpServletRequest, response: HttpServletResponse) =>
-        lazy val leaderDataOpt = electionService.leaderHostPort
-
-        if (electionService.isLeader) {
-          response.addHeader(LeaderProxyFilter.HEADER_MARATHON_LEADER, buildUrl(myHostPort).toString)
-          chain.doFilter(request, response)
-        } else if (leaderDataOpt.forall(_ == myHostPort)) { // either not leader or ourselves
-          log.info(
-            "Do not proxy to myself. Waiting for consistent leadership state. " +
-              s"Are we leader?: false, leader: $leaderDataOpt")
-          if (waitForConsistentLeadership()) {
-            doFilter(rawRequest, rawResponse, chain)
-          } else {
+        waitForConsistentLeadership() match {
+          case NoLeaderOrNotReady =>
             response.sendError(ServiceUnavailable.intValue, ERROR_STATUS_NO_CURRENT_LEADER)
-          }
-        } else {
-          try {
-            leaderDataOpt.foreach { leaderData =>
-              val url = buildUrl(leaderData, request)
+          case WeAreLeader =>
+            response.addHeader(LeaderProxyFilter.HEADER_MARATHON_LEADER, buildUrl(myHostPort).toString)
+            chain.doFilter(request, response)
+          case LeaderKnown(leaderHostPort) =>
+            try {
+              val url = buildUrl(leaderHostPort, request)
               forwarder.forward(url, request, response)
+            } catch {
+              case NonFatal(e) =>
+                throw new RuntimeException("while proxying", e)
             }
-          } catch {
-            case NonFatal(e) =>
-              throw new RuntimeException("while proxying", e)
-          }
         }
       case _ =>
         throw new IllegalArgumentException(s"expected http request/response but got $rawRequest/$rawResponse")
