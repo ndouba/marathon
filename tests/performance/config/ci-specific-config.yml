@@ -1,0 +1,14 @@
+# ----------------------------------------------------------- #
+# Configuration Fragment : CI-Specific Configuration          #
+# ----------------------------------------------------------- #
+# This fragment enables some additional reporters that make   #
+# sense to be used only witin Mesosphere's CI environment.    #
+# ----------------------------------------------------------- #
+
+# Fragments to include
+# ===========================
+include:
+
+  # Create the following reports
+  - fragments/report-s3.yml
+  - fragments/report-datadog-deploymentTime+httpRequestTime.yml

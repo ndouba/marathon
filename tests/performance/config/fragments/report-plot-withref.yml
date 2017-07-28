@@ -1,0 +1,30 @@
+# ----------------------------------------------------------- #
+# Configuration Fragment : Image Plots Reporter               #
+# ----------------------------------------------------------- #
+# This fragment enables the PlotReporter that is visualising  #
+# the results as a 2D plot image and stores it in the results #
+# folder.                                                     #
+#                                                             #
+# This fragment is also including a secondary line with some  #
+# reference data.
+# ----------------------------------------------------------- #
+
+# Global test configuration
+# ===========================
+config:
+
+  # We require the user to specify which plot reference data to use
+  definitions:
+    - name: plot_ref
+      desc: The URL to the reference plot data to use
+      required: yes
+
+# Reporter configuration
+# ===========================
+reporters:
+
+  # Create plots as images to results/plot-*.png
+  - class: reporter.PlotReporter
+    prefix: "results/plot-{{meta:test}}-"
+    reference:
+      url: "{{plot_ref}}"

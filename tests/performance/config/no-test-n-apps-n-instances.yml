@@ -1,0 +1,31 @@
+# ----------------------------------------------------------- #
+# Configuration Root : Run N Apps / N Instances Scale test    #
+# ----------------------------------------------------------- #
+
+# Global test configuration
+# ===========================
+config:
+
+  # The title of the test
+  title: "Marathon N Apps / N Instances Scale Test"
+
+# Fragments to include
+# ===========================
+include:
+
+  # Shared configuration
+  - fragments/config-common.yml
+
+  # Run the n-apps-n-instances test policy
+  - fragments/test-n-apps-n-instances.yml
+
+  # Use marathon's SSE endpoint to measure our metrics
+  - fragments/observer-marathon-sse.yml
+
+  # Measure deploymentTime and httpReponseTime
+  - fragments/measure-deploymentTime.yml
+  - fragments/measure-httpRequestTime.yml
+
+  # Create the following reports
+  - fragments/report-raw.yml
+  - fragments/report-csv.yml

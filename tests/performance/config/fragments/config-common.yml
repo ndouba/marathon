@@ -1,0 +1,13 @@
+# ----------------------------------------------------------- #
+# Configuration Fragment : Shared Configuration               #
+# ----------------------------------------------------------- #
+# This fragment contains tunable definition and configuration #
+# parameters for the other fragmetns.                         #
+# ----------------------------------------------------------- #
+
+# Global test configuration
+# ===========================
+config:
+
+  # We are repeating everything 5 times
+  repeat: 5

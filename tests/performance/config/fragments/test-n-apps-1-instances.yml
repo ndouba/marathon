@@ -1,0 +1,101 @@
+# ----------------------------------------------------------- #
+# Configuration Fragment : N apps / 1 instances scale test    #
+# ----------------------------------------------------------- #
+# This fragment defines two parameters that we are going to   #
+# explore: the number of `aps`, fixing `instances` to 1.      #
+#                                                             #
+# It also defines how these parameters are going to be a      #
+# applied to the marathon instance.                           #
+#                                                             #
+# Finally, it also includes an inter-test clean-up phase that #
+# helps reduce the number of resources consumed by the test.  #
+# ----------------------------------------------------------- #
+
+# Global test configuration
+# ===========================
+config:
+
+  # Input parameters of the test
+  parameters:
+
+    - name: apps
+      uuid: 7836e302bb7f43ea8e3477264c9b523e
+      units: count
+      desc: The number of apps deployed to marathon
+
+# Definitions
+# ===========================
+define:
+
+  # Instruct whoever is trying to normalize the indicators to do so
+  # against the number of apps
+  normalize_to: apps
+
+# Test Metadata
+# ===========================
+meta:
+  test: n-apps-1-instances
+
+# Test policy configuration
+# ===========================
+policies:
+
+  # Use multiple variable exploration policy
+  - class: policy.MultivariableExplorerPolicy
+
+    # The following rules describe the permutation matrix
+    matrix:
+      apps:
+        type: discrete
+        values: [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000]
+
+    # The event binding configuration
+    events:
+
+      # Wait until marathin is started before continuing with the tests
+      start: MarathonStartedEvent
+
+      # Signal the status of the following events
+      signal:
+        OK: MarathonDeploymentSuccessEvent
+        FAILURE: MarathonDeploymentFailedEvent
+
+      # Wait for the given number of events (evaluated at run-time)
+      signalEventCount: apps
+
+# Channel configuration
+# ===========================
+channels:
+
+  # Perform an HTTP request for every `instance` parameter change
+  - class: channel.HTTPChannel
+    url: "{{marathon_url}}/v2/apps"
+    verb: POST
+    repeat: "{{apps}}"
+    body: |
+      {
+        "cmd": "sleep 1200",
+        "cpus": 0.005,
+        "mem": 32,
+        "disk": 0,
+        "instances": 1,
+        "id": "/scale-instances/{{uuid()}}",
+        "backoffFactor": 1.0,
+        "backoffSeconds": 0
+      }
+
+# One-shot tasks
+# ===========================
+tasks:
+
+  # Right after ever test run we should remove all the instances
+  - class: tasks.marathon.RemoveGroup
+    url: "{{marathon_url}}"
+    group: /scale-instances
+    at: intertest
+
+  # Also remove the tests if they were abruptly terminated
+  - class: tasks.marathon.RemoveGroup
+    url: "{{marathon_url}}"
+    group: /scale-instances
+    at: teardown
