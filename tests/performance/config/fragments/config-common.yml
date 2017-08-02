@@ -11,3 +11,10 @@ config:
 
   # We are repeating everything 3 times
   repeat: 3
+
+# Global definitions
+# ==================
+define:
+
+  # The version specification we are using when writing the reponrts
+  versionspec: "{{meta:ref|date(%Y%m%d)}}-{{meta:version|safepath(meta:branch)|'unversioned'}}-{{meta:env}}-{{meta:test}}"

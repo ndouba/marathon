@@ -12,5 +12,5 @@ reporters:
   # Report raw results to amazon S3
   - class: reporter.S3Reporter
     bucket: marathon-artifacts
-    path: "metrics/{{date(%Y%m%d)}}-{{meta:test}}-{{meta:version|unknown}}-{{meta:env}}-results.json"
+    path: "metrics/dump-{{versionspec}}-results.json"
     acl: public-read

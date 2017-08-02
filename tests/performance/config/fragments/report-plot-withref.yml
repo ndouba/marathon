@@ -25,6 +25,6 @@ reporters:
 
   # Create plots as images to results/plot-*.png
   - class: reporter.PlotReporter
-    prefix: "results/plot-{{meta:test}}-"
+    prefix: "results/plot-{{versionspec}}-"
     reference:
       url: "{{plot_ref}}"

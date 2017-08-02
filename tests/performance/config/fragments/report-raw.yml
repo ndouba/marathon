@@ -11,4 +11,4 @@ reporters:
 
   # Dump raw time series results to results/dump.json
   - class: reporter.RawReporter
-    filename: "results/dump-{{meta:test}}.json"
+    filename: "results/dump-{{versionspec}}.json"
