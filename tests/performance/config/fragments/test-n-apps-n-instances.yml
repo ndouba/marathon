@@ -52,10 +52,10 @@ policies:
     matrix:
       apps:
         type: discrete
-        values: [5, 10, 15]
+        values: [50, 250, 500, 1000, 1500, 2000, 2500, 3000]
       instances:
         type: discrete
-        values: [5, 10, 15]
+        values: [50, 250, 500, 1000, 1500, 2000, 2500, 3000]
 
     # The event binding configuration
     events:

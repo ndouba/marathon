@@ -9,5 +9,5 @@
 # ===========================
 config:
 
-  # We are repeating everything 5 times
-  repeat: 5
+  # We are repeating everything 3 times
+  repeat: 3
