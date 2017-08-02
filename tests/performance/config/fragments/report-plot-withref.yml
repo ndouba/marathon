@@ -28,3 +28,4 @@ reporters:
     prefix: "results/plot-{{versionspec}}-"
     reference:
       url: "{{plot_ref}}"
+      name: "v{{refmeta:version|'_unknown'}}"
