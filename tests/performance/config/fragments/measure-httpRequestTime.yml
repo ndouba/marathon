@@ -33,10 +33,9 @@ config:
 # ===========================
 trackers:
 
-  # Track httpRequestTime as the duration between an `HTTPRequestStartEvent`
-  # and an HTTPResponseStartEvent
+  # Track httpRequestTime as the duration between a deployment request and start
   - class: tracker.DurationTracker
     metric: httpRequestTime
     events:
-      start: HTTPRequestStartEvent
-      end: HTTPResponseStartEvent
+      start: MarathonDeploymentRequestedEvent
+      end: MarathonDeploymentStartedEvent

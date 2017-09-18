@@ -1,0 +1,29 @@
+# ----------------------------------------------------------- #
+# Configuration Fragment : Custom marathon deploymetn         #
+# ----------------------------------------------------------- #
+# This fragment instructs the driver to launch the tests      #
+# using a marathon version already deployed in the given URL  #
+# ----------------------------------------------------------- #
+
+# Global test configuration
+# ===========================
+config:
+
+  # We require the following definitions to be present (might be defined by
+  # other fragments, or must be given by the user)
+  definitions:
+    - name: base_url
+      desc: The URL to the deployed marathon
+      required: yes
+
+# Test Metadata
+# ===========================
+meta:
+  mesos: local-sim
+
+# Definitions
+# ===========================
+define:
+
+  # We received a deployed marathon instance at the given URL
+  marathon_url: "{{base_url}}"

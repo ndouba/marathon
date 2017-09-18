@@ -33,10 +33,10 @@ config:
 # ===========================
 trackers:
 
-  # Track deploymentTime as the duration between an `HTTPResponseEndEvent`
+  # Track deploymentTime as the duration between an `MarathonDeploymentStartedEvent`
   # and an `MarathonDeploymentSuccessEvent`
   - class: tracker.DurationTracker
     metric: deploymentTime
     events:
-      start: HTTPResponseEndEvent
+      start: MarathonDeploymentStartedEvent
       end: MarathonDeploymentSuccessEvent

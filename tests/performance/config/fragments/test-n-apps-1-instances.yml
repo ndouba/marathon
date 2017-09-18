@@ -40,49 +40,55 @@ meta:
 # ===========================
 policies:
 
-  # Use multiple variable exploration policy
-  - class: policy.MultivariableExplorerPolicy
+  # Use multi-step exploration policy even if we are using only 1 step
+  - class: policy.MultiStepPolicy
+    steps:
 
-    # The following rules describe the permutation matrix
-    matrix:
-      apps:
-        type: discrete
-        values: [50, 250, 500, 1000, 1500, 2000, 2500, 3000]
+      # Scale the apps
+      - name: Scale Apps
+        values:
+          - parameter: apps
+            min: 10
+            step: 50
+            max: 1000
 
-    # The event binding configuration
-    events:
+        events:
+          # Wait until marathon is started before continuing with the tests
+          start: MarathonStartedEvent:single
 
-      # Wait until marathin is started before continuing with the tests
-      start: MarathonStartedEvent
+          # We advance to next values every time we receive a deployment completion
+          advance: MarathonDeploymentSuccessEvent MarathonDeploymentFailedEvent
 
-      # Signal the status of the following events
-      signal:
-        OK: MarathonDeploymentSuccessEvent
-        FAILURE: MarathonDeploymentFailedEvent
+        # Wait for "apps" number of advance events before actually advancing
+        advance_condition:
+          events: "apps"
 
-      # Wait for the given number of events (evaluated at run-time)
-      signalEventCount: apps
+        tasks:
+          pre_value: intertest
 
 # Channel configuration
 # ===========================
 channels:
 
-  # Perform an HTTP request for every `instance` parameter change
-  - class: channel.HTTPChannel
-    url: "{{marathon_url}}/v2/apps"
-    verb: POST
-    repeat: "{{apps}}"
-    body: |
-      {
-        "cmd": "sleep 1200",
-        "cpus": 0.005,
-        "mem": 32,
-        "disk": 0,
-        "instances": 1,
-        "id": "/scale-instances/{{uuid()}}",
-        "backoffFactor": 1.0,
-        "backoffSeconds": 0
-      }
+  # Perform a bulk of marathon deployments for every {{apps}} change
+  - class: channel.MarathonDeployChannel
+    url: "{{marathon_url}}"
+    trigger:
+      parameters: apps
+    deploy:
+      - type: app
+        repeat: "apps"
+        spec: |
+          {
+            "cmd": "sleep 1200",
+            "cpus": 0.005,
+            "mem": 32,
+            "disk": 0,
+            "instances": 1,
+            "id": "/scale-instances/{{uuid()}}",
+            "backoffFactor": 1.0,
+            "backoffSeconds": 0
+          }
 
 # One-shot tasks
 # ===========================

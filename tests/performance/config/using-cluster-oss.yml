@@ -14,7 +14,7 @@ config:
   # We require the following definitions to be present (might be defined by
   # other fragments, or must be given by the user)
   definitions:
-    - name: cluster_url
+    - name: base_url
       desc: The URL to the deployed DC/OS cluster
       required: yes
 
@@ -28,7 +28,7 @@ meta:
 define:
 
   # Define `marathon_url` as part of the cluster URL
-  marathon_url: "{{cluster_url}}/marathon"
+  marathon_url: "{{base_url}}/marathon"
 
 # One-time tasks
 # ===========================

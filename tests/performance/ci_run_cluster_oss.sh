@@ -8,7 +8,7 @@ if [ -z "$1" ]; then
   echo "ERROR: Please specify the URL to the OSS cluster to use"
   exit 1
 fi
-CLUSTER_URL="$1"
+BASE_URL="$1"
 shift
 
 # Check if we have PLOT_REFERENCE and include the correct configuration
@@ -50,7 +50,7 @@ for TEST_CONFIG in ./config/test-*.yml; do
     ./config/ci-specific-config.yml \
     $TEST_CONFIG \
     $REST_ARGS \
-    -D "cluster_url=${CLUSTER_URL}" \
+    -D "base_url=${BASE_URL}" \
     -D "datadog_api_key=${DATADOG_API_KEY}" \
     -D "datadog_app_key=${DATADOG_APP_KEY}" \
     $*

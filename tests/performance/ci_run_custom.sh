@@ -1,11 +1,11 @@
 #!/bin/bash
-# This script runs the scale tests against a physical DC/OS cluster provisioned
-# by an external tool. This script expects the user to provide the cluster URL
-# as the first argument.
+# This script runs the scale tests against a pre-deployed marathon installation
+# in user's perimesis. This script expects the user to provide the URL to one of
+# marathon masters.
 
 # Require the user to provide the cluster URL
 if [ -z "$1" ]; then
-  echo "ERROR: Please specify the URL to the EE cluster to use"
+  echo "ERROR: Please specify the URL to marathon to use"
   exit 1
 fi
 BASE_URL="$1"
@@ -46,7 +46,7 @@ for TEST_CONFIG in ./config/test-*.yml; do
   # Launch the performance test driver with the correct arguments
   # (NOTE: Using eval to expand REST_ARGS arguments)
   eval dcos-perf-test-driver \
-    ./config/using-cluster-ee.yml \
+    ./config/using-marathon-url.yml \
     ./config/ci-specific-config.yml \
     $TEST_CONFIG \
     $REST_ARGS \
@@ -55,3 +55,4 @@ for TEST_CONFIG in ./config/test-*.yml; do
     -D "datadog_app_key=${DATADOG_APP_KEY}" \
     $*
 done
+

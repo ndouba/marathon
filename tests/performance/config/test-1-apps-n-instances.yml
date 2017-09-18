@@ -22,9 +22,10 @@ include:
   # Use marathon's SSE endpoint to measure our metrics
   - fragments/observer-marathon-sse.yml
 
-  # Measure deploymentTime and httpReponseTime
+  # Measure the given metrics
   - fragments/measure-deploymentTime.yml
   - fragments/measure-httpRequestTime.yml
+  - fragments/measure-failedDeployments.yml
 
   # Create the following reports
   - fragments/report-raw.yml
