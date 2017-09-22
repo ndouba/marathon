@@ -11,4 +11,4 @@ include:
 
   # Create the following reports
   - fragments/report-s3.yml
-  - fragments/report-datadog-deploymentTime+httpRequestTime.yml
+  - fragments/report-datadog.yml

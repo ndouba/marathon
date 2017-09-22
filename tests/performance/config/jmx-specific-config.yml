@@ -1,0 +1,17 @@
+# ----------------------------------------------------------- #
+# Configuration Fragment : Enable JMX observer & metrics      #
+# ----------------------------------------------------------- #
+# This file includes the relevant fragments that are going    #
+# to enable the JMX observer in order to extract run-time     #
+# metrics.                                                    #
+# ----------------------------------------------------------- #
+
+# Fragments to include
+# ===========================
+include:
+
+  # Create the following reports
+  - fragments/observer-jmx.yml
+  - fragments/measure-jmx-threadCount.yml
+  - fragments/measure-jmx-usedMemory.yml
+  - fragments/measure-jmx-cpuUsage.yml

@@ -20,12 +20,15 @@ include:
   - fragments/test-n-apps-1-instances.yml
 
   # Use marathon's SSE endpoint to measure our metrics
+  - fragments/observer-marathon-http-timing.yml
   - fragments/observer-marathon-sse.yml
 
   # Measure the given metrics
   - fragments/measure-deploymentTime.yml
+  - fragments/measure-fullDeploymentTime.yml
   - fragments/measure-httpRequestTime.yml
   - fragments/measure-failedDeployments.yml
+  - fragments/measure-groupsResponseTime.yml
 
   # Create the following reports
   - fragments/report-raw.yml

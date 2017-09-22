@@ -14,3 +14,9 @@ reporters:
     bucket: marathon-artifacts
     path: "metrics/dump-{{versionspec}}-results.json"
     acl: public-read
+
+    # Update index with the archived test data
+    index:
+      path: dashboards/config/index.json
+      entry: "{{meta:test}}"
+

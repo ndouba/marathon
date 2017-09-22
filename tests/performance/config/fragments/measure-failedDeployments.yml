@@ -15,7 +15,7 @@ config:
       uuid: f1c4a1d569564600b7afe69e5f6a6548
       desc: How many deployment failures occurred
       summarize: [mean_err]
-      units: sec
+      units: deployments
 
   # Define the indicators that can summarise our values
   indicators:

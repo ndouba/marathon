@@ -32,3 +32,15 @@ reporters:
         indicator: meanDeploymentTime
       - name: meanHttpRequestTime
         indicator: meanHttpRequestTime
+      - name: meanFailedDeployments
+        indicator: meanFailedDeployments
+      - name: meanFullDeploymentTime
+        indicator: meanFullDeploymentTime
+      - name: meangroupsResponseTime
+        indicator: meangroupsResponseTime
+      - name: meanCpuUsage
+        indicator: meanCpuUsage
+      - name: meanThreadCount
+        indicator: meanThreadCount
+      - name: meanUsedMemory
+        indicator: meanUsedMemory

@@ -82,7 +82,7 @@ channels:
     repeat: "{{apps}}"
     body: |
       {
-        "cmd": "sleep 1200",
+        "cmd": "sleep infinity",
         "cpus": 0.005,
         "mem": 32,
         "disk": 0,

@@ -48,9 +48,9 @@ policies:
       - name: Scale Apps
         values:
           - parameter: apps
-            min: 10
+            min: 50
             step: 50
-            max: 1000
+            max: 500
 
         events:
           # Wait until marathon is started before continuing with the tests
@@ -80,7 +80,7 @@ channels:
         repeat: "apps"
         spec: |
           {
-            "cmd": "sleep 1200",
+            "cmd": "sleep infinity",
             "cpus": 0.005,
             "mem": 32,
             "disk": 0,

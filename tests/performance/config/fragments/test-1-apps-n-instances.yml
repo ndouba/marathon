@@ -48,9 +48,9 @@ policies:
       - name: Scale Instances
         values:
           - parameter: instances
-            min: 10
+            min: 50
             step: 50
-            max: 1000
+            max: 500
 
         tasks:
           pre_value: intertest
@@ -75,7 +75,7 @@ channels:
       - type: app
         spec: |
           {
-            "cmd": "sleep 1200",
+            "cmd": "sleep infinity",
             "cpus": 0.005,
             "mem": 32,
             "disk": 0,

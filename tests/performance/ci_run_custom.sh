@@ -47,6 +47,7 @@ for TEST_CONFIG in ./config/test-*.yml; do
   # (NOTE: Using eval to expand REST_ARGS arguments)
   eval dcos-perf-test-driver \
     ./config/using-marathon-url.yml \
+    ./config/jmx-specific-config.yml \
     ./config/ci-specific-config.yml \
     $TEST_CONFIG \
     $REST_ARGS \
